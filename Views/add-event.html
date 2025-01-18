@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Event</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 id="form-title">Add Event</h1>
+        <form id="event-form">
+            <div class="mb-3">
+                <label for="title" class="form-label">Event Title</label>
+                <input type="text" class="form-control" id="title" placeholder="Enter event title" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" rows="3" placeholder="Enter event description" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="event-date" class="form-label">Event Date</label>
+                <input type="date" class="form-control" id="event-date" required>
+            </div>
+            <button type="submit" class="btn btn-primary" id="form-button">Add Event</button>
+        </form>
+    </div>
+
+    <script>
+        const queryParams = new URLSearchParams(window.location.search);
+        const eventId = queryParams.get('id');
+        const formTitle = document.getElementById('form-title');
+        const formButton = document.getElementById('form-button');
+
+        if (eventId) {
+            formTitle.textContent = 'Edit Event';
+            formButton.textContent = 'Update Event';
+
+            // Fetch event details to populate the form
+            fetch(`http://localhost:3000/api/events/${eventId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('title').value = data.title;
+                    document.getElementById('description').value = data.description;
+                    document.getElementById('event-date').value = data.event_date.split('T')[0];
+                });
+        }
+
+        document.getElementById('event-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const payload = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                event_date: document.getElementById('event-date').value,
+            };
+
+            const url = eventId
+                ? `http://localhost:3000/api/events/${eventId}`
+                : 'http://localhost:3000/api/events';
+
+            const method = eventId ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Something went wrong');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const action = eventId ? 'updated' : 'added';
+                    showToast(`Event successfully ${action}!`, 'success');
+                    if (!eventId) {
+                        document.getElementById('event-form').reset();
+                    }
+                })
+                .catch(error => showToast(error.message, 'danger'));
+        });
+
+        function showToast(message, type) {
+            const toastContainer = document.createElement('div');
+            toastContainer.className = `toast align-items-center text-bg-${type} border-0`;
+            toastContainer.role = 'alert';
+            toastContainer.style.position = 'fixed';
+            toastContainer.style.bottom = '20px';
+            toastContainer.style.right = '20px';
+            toastContainer.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>`;
+            document.body.appendChild(toastContainer);
+
+            const toast = new bootstrap.Toast(toastContainer);
+            toast.show();
+
+            setTimeout(() => {
+                toastContainer.remove();
+            }, 3000);
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
