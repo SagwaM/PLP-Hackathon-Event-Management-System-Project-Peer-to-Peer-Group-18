@@ -15,8 +15,8 @@ A modern, interactive, and user-friendly Event Management System designed to str
 * Responsive Design: Fully functional across devices with a mobile-first approach.
 * Interactive Animations: Smooth transitions and modern UI components.
 * Reports and Analytics: Insights into event performance and attendee activity.
-# Project Structure
-## Frontend Files
+# 🔗Project Structure
+## 🌐Frontend Files
 HTML Pages:
 - categories.html: Manage event categories.
 - add-event.html: Form to create new events.
