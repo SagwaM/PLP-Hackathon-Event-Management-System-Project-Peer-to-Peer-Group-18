@@ -79,4 +79,9 @@ Start the Server:
 ## Guest:
 - Explore public events on the landing page.
 
-
+## Contributing
+Contributions are welcome! Follow these steps:
+- Fork the repository.
+- Create a new branch (feature/new-feature).
+- Commit your changes.
+- Push to your branch and create a pull request.
