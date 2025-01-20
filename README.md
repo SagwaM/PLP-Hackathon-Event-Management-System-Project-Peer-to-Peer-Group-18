@@ -1,7 +1,7 @@
-# 🔗Event Management System
+# 🔗Event Management System✨
 A modern, interactive, and user-friendly Event Management System designed to streamline event planning and attendee management. This full-stack project combines an elegant frontend interface with a robust Node.js backend and MySQL database for seamless operations.
 # 🚀Features
-## Core Functionality
+## Core Functionality⭐
 - Event Creation: Add new events with titles, descriptions, and dates.
 - Event Management: View, update, and delete events with ease.
 - Event Categories: Organize events using categories for better accessibility.
@@ -10,7 +10,7 @@ A modern, interactive, and user-friendly Event Management System designed to str
 - Attendee: Browse events, book tickets, and manage bookings.
 - Bookings: Attendees can book events, view their bookings, and review past events.
 - User Profile: Manage personal information and settings.
-## Advanced Features
+## Advanced Features🚀
 * Date Validation: Prevent past-date event creation.
 * Responsive Design: Fully functional across devices with a mobile-first approach.
 * Interactive Animations: Smooth transitions and modern UI components.
@@ -35,7 +35,7 @@ HTML Pages:
 - view-bookings.html: Admin interface to monitor attendee bookings.
 - view-categories.html: Admin interface to manage categories.
 - view-events.html: Admin and attendee views for all events.
-## Backend
+## Backend🙌
 - Node.js and Express.js:
 - RESTful APIs for CRUD operations (Create, Read, Update, Delete).
 - Secure authentication and role-based access control.
@@ -46,11 +46,11 @@ HTML Pages:
 # Getting Started
 Follow these steps to set up the project locally:
 
-## Prerequisites
+## Prerequisites🤲
 - Node.js (v16 or higher)
 - MySQL
 - Any modern browser (for testing the frontend)
-## Installation
+## Installation🙌
 Clone the Repository:
 `git clone https://github.com/your-username/event-management-system.git`
 `cd event-management-system`
@@ -79,9 +79,14 @@ Start the Server:
 ## Guest:
 - Explore public events on the landing page.
 
-## Contributing
+## Contributing✌
 Contributions are welcome! Follow these steps:
 - Fork the repository.
 - Create a new branch (feature/new-feature).
 - Commit your changes.
 - Push to your branch and create a pull request.
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+## Contact
+For questions, feedback, or collaboration get intouch with PLP group 18 Members
