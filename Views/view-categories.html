@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Management</title>
+    <script src="https://kit.fontawesome.com/164459a379.js" crossorigin="anonymous"></script>
+    <style>
+        /* General Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: row;
+            background-color: #f4f4f4;
+        }
+
+        /* Sidebar styling */
+        .admin-sidebar {
+            width: 220px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-menu {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .sidebar-menu li {
+            margin: 10px 0;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+        }
+
+        .sidebar-menu .dropdown-menu {
+            display: none;
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        .sidebar-menu .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown > a::after {
+            content: " ▼";
+            float: right;
+        }
+
+        .dropdown:hover > a::after {
+            content: " ▲";
+        }
+
+        /* Main content section */
+        .admin-dashboard {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+            transition: margin-left 0.3s ease;
+        }
+
+        .event-table {
+            margin-top: 20px;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        .category-actions button {
+            padding: 5px 10px;
+            margin: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .category-actions .delete-btn {
+            background-color: #dc3545;
+        }
+
+        .category-actions .edit-btn {
+            background-color: #ffc107;
+        }
+
+        /* Popup Styling */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
+
+        .popup.active {
+            display: block;
+        }
+
+        .popup .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .popup .popup-header h3 {
+            margin: 0;
+        }
+
+        .popup .popup-header button {
+            background-color: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <h2>Admin Dashboard</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="admin-1.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-cogs"></i> Event Management</a>
+                <ul class="dropdown-menu">
+                    <li><a href="add-event.html"><i class="fas fa-edit"></i> Manage Events</a></li>
+                    <li><a href="view-events.html"><i class="fas fa-list"></i> Event Listings</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-th"></i> Categories</a>
+                <ul class="dropdown-menu">
+                    <li><a href="view-categories.html"><i class="fas fa-plus-circle"></i> Manage Categories</a></li>
+                </ul>
+            </li>
+            <li><a href="revenue-breakdown.html"><i class="fas fa-chart-line"></i> Revenue Breakdown</a></li>
+            <li><a href="reports-analytics.html"><i class="fas fa-chart-pie"></i> Reports and Analytics</a></li>
+            <li><a href="attendee-management.html"><i class="fas fa-users"></i> Attendee Management</a></li>
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-users-cog"></i> User Management</a>
+                <ul class="dropdown-menu">
+                    <li><a href="add-admin.html"><i class="fas fa-user-plus"></i> Add Admin</a></li>
+                    <li><a href="add-attendee.html"><i class="fas fa-user-plus"></i> Add Attendee</a></li>
+                </ul>
+            </li>
+            <li><a href="profile-management.html"><i class="fas fa-user-circle"></i> Profile Management</a></li>
+            <li><a href="settings.html"><i class="fas fa-cogs"></i> Settings</a></li>
+            <li><a href="logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="admin-dashboard">
+        <h1>Categories Management</h1>
+
+        <!-- Category Management -->
+        <div class="event-table">
+            <h2>Categories</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sample Category 1</td>
+                        <td>
+                            <button class="edit-btn"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="delete-btn"><i class="fas fa-trash-alt"></i> Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Add Category Button -->
+        <button id="addCategoryBtn">Add Category</button>
+    </div>
+
+    <!-- Popup -->
+    <div id="overlay" class="overlay"></div>
+    <div id="popup" class="popup">
+        <div class="popup-header">
+            <h3>Add Category</h3>
+            <button id="closePopupBtn">&times;</button>
+        </div>
+        <form id="addCategoryForm">
+            <label for="categoryName">Category Name</label>
+            <input type="text" id="categoryName" placeholder="Enter category name">
+            <div class="mb-3">
+                <label for="categoryDescription" class="form-label">Category Description</label>
+                <textarea class="form-control" id="categoryDescription" rows="3" placeholder="Enter category description" required></textarea>
+            </div>
+            <button type="submit">Add</button>
+        </form>
+    </div>
+
+    <script>
+        const addCategoryBtn = document.getElementById("addCategoryBtn");
+        const popup = document.getElementById("popup");
+        const overlay = document.getElementById("overlay");
+        const closePopupBtn = document.getElementById("closePopupBtn");
+
+        addCategoryBtn.addEventListener("click", () => {
+            popup.classList.add("active");
+            overlay.classList.add("active");
+        });
+
+        closePopupBtn.addEventListener("click", () => {
+            popup.classList.remove("active");
+            overlay.classList.remove("active");
+        });
+
+        overlay.addEventListener("click", () => {
+            popup.classList.remove("active");
+            overlay.classList.remove("active");
+        });
+    </script>
+</body>
+</html>

@@ -3,109 +3,423 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Event</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Add Event</title>
+    <script src="https://kit.fontawesome.com/164459a379.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Reset and basic styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Sidebar Styling */
+        .admin-sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-menu {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .sidebar-menu li {
+            margin: 10px 0;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+        }
+
+        .sidebar-menu .dropdown-menu {
+            display: none;
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        .sidebar-menu .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        /* Add dropdown icon */
+        .dropdown > a::after {
+            content: " ▼";
+            float: right;
+        }
+
+        .dropdown:hover > a::after {
+            content: " ▲";
+        }
+
+        /* Dashboard Styling */
+        .admin-dashboard {
+            margin-left: 250px;
+            padding: 20px;
+            padding-left: 30px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .key-metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .metric {
+            background-color: #ecf0f1;
+            padding: 20px;
+            width: 22%;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .recent-activities, .quick-links, .visualizations {
+            margin-bottom: 30px;
+        }
+
+        .recent-activities ul, .quick-links ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .recent-activities li, .quick-links li {
+            margin: 5px 0;
+        }
+
+        .chart {
+            width: 100%;
+            height: 300px;
+        }
+
+        #revenueCanvas, #bookingTrendsCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Hamburger Icon */
+        .hamburger-icon {
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: none;
+        }
+
+        /* X Icon */
+        .close-icon {
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        /* Centering the form */
+        #manage-events {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full viewport height */
+            padding: 20px;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 1000px; /* Max width for the form */
+            padding: 20px;
+            background-color: #0d212b;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+         /* Column layout for the form */
+         .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .form-column {
+            flex: 1;
+            min-width: 200px; /* Ensures columns have a minimum width */
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #46eddc;
+            color: rgb(29, 44, 59);
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #23cdd0;
+        }
+
+        /* For Mobile: Hide sidebar and show hamburger */
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 0;
+                padding: 0;
+                position: fixed;
+                height: 100%;
+            }
+
+            .admin-dashboard {
+                margin-left: 0;
+            }
+
+            .hamburger-icon {
+                display: block;
+            }
+
+            .admin-sidebar.open {
+                width: 250px;
+            }
+
+            .close-icon {
+                display: block;
+            }
+        }
+
+        /* Form Styling */
+        .form-container {
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+            margin-top: 40px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .form-container form div {
+            margin-bottom: 15px;
+        }
+
+        .form-container label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-container input, .form-container textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .form-container button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .form-container button:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1 id="form-title">Add Event</h1>
-        <form id="event-form">
-            <div class="mb-3">
-                <label for="title" class="form-label">Event Title</label>
-                <input type="text" class="form-control" id="title" placeholder="Enter event title" required>
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea class="form-control" id="description" rows="3" placeholder="Enter event description" required></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="event-date" class="form-label">Event Date</label>
-                <input type="date" class="form-control" id="event-date" required>
-            </div>
-            <button type="submit" class="btn btn-primary" id="form-button">Add Event</button>
-        </form>
+
+<!-- Sidebar -->
+ <!-- Hamburger icon for mobile view -->
+ <div class="hamburger-icon" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+</div>
+
+<!-- Admin Sidebar -->
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <h2>Admin Dashboard</h2>
     </div>
+    <ul class="sidebar-menu">
+        <li><a href="admin-1.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li class="dropdown">
+            <a href="#"><i class="fas fa-cogs"></i> Event Management</a>
+            <ul class="dropdown-menu">
+                <li><a href="add-event.html"><i class="fas fa-edit"></i> Manage Events</a></li>
+                <li><a href="view-events.html"><i class="fas fa-list"></i> Event Listings</a></li>
+            </ul>
+        </li>
+        <li class="dropdown">
+            <a href="#"><i class="fas fa-book"></i> Booking Management</a>
+            <ul class="dropdown-menu">
+                <li><a href="view-bookings.html"><i class="fas fa-eye"></i> View Bookings</a></li>
+                <li><a href="confirm-cancel-bookings.html"><i class="fas fa-check-circle"></i> Confirm/Cancel Bookings</a></li>
+            </ul>
+        </li>
+        <li><a href="revenue-breakdown.html"><i class="fas fa-chart-line"></i> Revenue Breakdown</a></li>
+        <li><a href="reports-analytics.html"><i class="fas fa-chart-pie"></i> Reports and Analytics</a></li>
+        <li class="dropdown">
+            <a href="#"><i class="fas fa-th"></i> Categories Management</a>
+            <ul class="dropdown-menu">
+                <li><a href="view-categories.html"><i class="fas fa-plus-circle"></i> Manage Category</a></li>
+                
+            </ul>
+        </li>
+        <li><a href="attendee-management.html"><i class="fas fa-users"></i> Attendee Management</a></li>
+        <li class="dropdown">
+            <a href="#"><i class="fas fa-users-cog"></i> User Management</a>
+            <ul class="dropdown-menu">
+                <li><a href="add-admin.html"><i class="fas fa-user-plus"></i> Add Admin</a></li>
+                <li><a href="add-attendee.html"><i class="fas fa-user-plus"></i> Add Attendee</a></li>
+            </ul>
+        </li>
+        <li><a href="profile-management.html"><i class="fas fa-user-circle"></i> Profile Management</a></li>
+        <li><a href="settings.html"><i class="fas fa-cogs"></i> Settings</a></li>
+        <li><a href="logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+    <!-- Close icon for mobile view -->
+    <div class="close-icon" onclick="toggleSidebar()">
+        <i class="fas fa-times"></i>
+    </div>
+</aside>
 
-    <script>
-        const queryParams = new URLSearchParams(window.location.search);
-        const eventId = queryParams.get('id');
-        const formTitle = document.getElementById('form-title');
-        const formButton = document.getElementById('form-button');
 
-        if (eventId) {
-            formTitle.textContent = 'Edit Event';
-            formButton.textContent = 'Update Event';
+<main class="content">
 
-            // Fetch event details to populate the form
-            fetch(`http://localhost:3000/api/events/${eventId}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('title').value = data.title;
-                    document.getElementById('description').value = data.description;
-                    document.getElementById('event-date').value = data.event_date.split('T')[0];
-                });
-        }
+     <!-- Manage Events Section -->
+    <section id="manage-events" class="manage-events">
+        <div class="form-container">
+            <h2>Add New Event</h2>
+            <form id="addEventForm">
+                <div class="form-row">
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" id="title" name="title" placeholder="Enter event title">
+                        </div>
+                    </div>
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="date">Date/Time</label>
+                            <input type="datetime-local" id="date" name="date">
+                        </div>
+                    </div>
+                </div>
 
-        document.getElementById('event-form').addEventListener('submit', function (e) {
-            e.preventDefault();
+                <div class="form-row">
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" placeholder="Enter event description"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="venue">Venue</label>
+                            <input type="text" id="venue" name="venue" placeholder="Enter venue">
+                        </div>
+                    </div>
+                </div>
 
-            const payload = {
-                title: document.getElementById('title').value,
-                description: document.getElementById('description').value,
-                event_date: document.getElementById('event-date').value,
-            };
+                <div class="form-row">
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="capacity">Capacity</label>
+                            <input type="number" id="capacity" name="capacity" placeholder="Enter maximum participants">
+                        </div>
+                    </div>
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" name="category">
+                                <option value="">Select Category</option>
+                                <option value="conference">Conference</option>
+                                <option value="workshop">Workshop</option>
+                                <option value="concert">Concert</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
-            const url = eventId
-                ? `http://localhost:3000/api/events/${eventId}`
-                : 'http://localhost:3000/api/events';
+                <div class="form-row">
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="price">Price</label>
+                            <input type="text" id="price" name="price" placeholder="Enter price (if applicable)">
+                        </div>
+                    </div>
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="image">Event Image</label>
+                            <input type="file" id="image" name="image">
+                        </div>
+                    </div>
+                </div>
 
-            const method = eventId ? 'PUT' : 'POST';
+                <button type="submit">Add Event</button>
+            </form>
+        </div>
+    </section>
+</main>
 
-            fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Something went wrong');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const action = eventId ? 'updated' : 'added';
-                    showToast(`Event successfully ${action}!`, 'success');
-                    if (!eventId) {
-                        document.getElementById('event-form').reset();
-                    }
-                })
-                .catch(error => showToast(error.message, 'danger'));
-        });
-
-        function showToast(message, type) {
-            const toastContainer = document.createElement('div');
-            toastContainer.className = `toast align-items-center text-bg-${type} border-0`;
-            toastContainer.role = 'alert';
-            toastContainer.style.position = 'fixed';
-            toastContainer.style.bottom = '20px';
-            toastContainer.style.right = '20px';
-            toastContainer.innerHTML = `
-                <div class="d-flex">
-                    <div class="toast-body">${message}</div>
-                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>`;
-            document.body.appendChild(toastContainer);
-
-            const toast = new bootstrap.Toast(toastContainer);
-            toast.show();
-
-            setTimeout(() => {
-                toastContainer.remove();
-            }, 3000);
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById("add-event-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        // You can add your AJAX request to submit form data to the server.
+        alert('Event added successfully!');
+    });
+</script>
 </body>
 </html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Listings</title>
+    <script src="https://kit.fontawesome.com/164459a379.js" crossorigin="anonymous"></script>
+    <style>
+        /* Your styles here */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+        }
+
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            margin: 15px 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar a:hover {
+            text-decoration: underline;
+        }
+
+        .sidebar i {
+            margin-right: 10px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            background-color: #ecf0f1;
+            overflow-y: auto;
+        }
+
+        .navbar {
+            height: 60px;
+            background-color: #34495e;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+        }
+
+        .navbar .icons {
+            display: flex;
+            align-items: right;
+        }
+
+        .navbar .icons i {
+            margin-left: 20px;
+            cursor: pointer;
+        }
+
+        /* Event Listings */
+        .event-listings {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .event {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            width: calc(33% - 20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .event img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .event h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .event button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .event button:hover {
+            background-color: #2980b9;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .event {
+                width: calc(50% - 20px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                margin: 0;
+                padding: 10px;
+            }
+
+            .event {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h1>Event Listings</h1>
+        <div class="icons">
+            <i class="fas fa-bell"></i>
+            <i class="fas fa-user-circle"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a href="attendee-1.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#"><i class="fas fa-star"></i> Featured Events</a>
+            <a href="#"><i class="fas fa-heart"></i> Personalized Recommendations</a>
+            <a href="recently-attended.html"><i class="fas fa-calendar-check"></i> Recently Attended Events</a>
+            <a href="attendee-events.html"><i class="fas fa-list"></i> Event Listings</a>
+            <a href="my-bookings.html"><i class="fas fa-ticket-alt"></i> My Bookings</a>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h2>Event Listings</h2>
+            <div class="event-listings" id="event-listings">
+                <!-- Event Cards will be dynamically injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch events from the backend API
+            fetch('http://localhost:3000/api/events')
+                .then(response => response.json())
+                .then(events => {
+                    const eventListings = document.getElementById('event-listings');
+                    eventListings.innerHTML = ''; // Clear previous events
+
+                    // Loop through each event and display it
+                    events.forEach(event => {
+                        const eventElement = document.createElement('div');
+                        eventElement.className = 'event';
+                        eventElement.innerHTML = `
+                            <img src="${event.image_url}" alt="${event.title}">
+                            <h3>${event.title}</h3>
+                            <p>Date: ${event.event_date}</p>
+                            <p>Category: ${event.category}</p>
+                            <p>Description: ${event.description}</p>
+                            <p>Location: ${event.location}</p>
+                            <button>Book Now</button>
+                        `;
+                        eventListings.appendChild(eventElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching events:', error);
+                });
+        });
+    </script>
+    <script src="../public/js/bookings.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports and Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://kit.fontawesome.com/164459a379.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            justify-content: right;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-box {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box h2 {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+
+        .chart-container {
+            margin-top: 40px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .report-table {
+            margin-top: 40px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .report-table th, .report-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .report-table th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .export-btn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .export-btn:hover {
+            background-color: #45a049;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Sidebar Styling */
+        .admin-sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            z-index: 1000;
+            overflow-y: auto; /* Add scrollbar when content overflows */
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-menu {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .sidebar-menu li {
+            margin: 10px 0;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+        }
+
+        .sidebar-menu .dropdown-menu {
+            display: none;
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        .sidebar-menu .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        /* Add dropdown icon */
+        .dropdown > a::after {
+            content: " ▼";
+            float: right;
+        }
+
+        .dropdown:hover > a::after {
+            content: " ▲";
+        }
+
+        /* Dashboard Styling */
+        .admin-dashboard {
+            margin-left: 250px;  /* Ensure content starts after sidebar */
+            padding: 20px;
+            padding-left: 30px; /* Space to avoid overlap */
+            transition: margin-left 0.3s ease;
+        }
+
+        .key-metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .metric {
+            background-color: #ecf0f1;
+            padding: 20px;
+            width: 22%;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .recent-activities, .quick-links, .visualizations {
+            margin-bottom: 30px;
+        }
+
+        .recent-activities ul, .quick-links ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .recent-activities li, .quick-links li {
+            margin: 5px 0;
+        }
+
+        .chart {
+            width: 100%;
+            height: 300px;
+        }
+
+        #revenueCanvas, #bookingTrendsCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Hamburger Icon */
+        .hamburger-icon {
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: none;
+        }
+
+        /* X Icon */
+        .close-icon {
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        /* For Mobile: Hide sidebar and show hamburger */
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 0;
+                padding: 0;
+                position: fixed;
+                height: 100%;
+            }
+
+            .admin-dashboard {
+                margin-left: 0;
+            }
+
+            .hamburger-icon {
+                display: block;
+            }
+
+            .admin-sidebar.open {
+                width: 250px;
+            }
+
+            .close-icon {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hamburger icon for mobile view -->
+    <div class="hamburger-icon" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <h2>Admin Dashboard</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="admin-1.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-cogs"></i> Event Management</a>
+                <ul class="dropdown-menu">
+                    <li><a href="add-event.html"><i class="fas fa-edit"></i> Manage Events</a></li>
+                    <li><a href="view-events.html"><i class="fas fa-list"></i> Event Listings</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-book"></i> Booking Management</a>
+                <ul class="dropdown-menu">
+                    <li><a href="view-bookings.html"><i class="fas fa-eye"></i> View Bookings</a></li>
+                    <li><a href="confirm-cancel-bookings.html"><i class="fas fa-check-circle"></i> Confirm/Cancel Bookings</a></li>
+                </ul>
+            </li>
+            <li><a href="revenue-breakdown.html"><i class="fas fa-chart-line"></i> Revenue Breakdown</a></li>
+            <li><a href="reports-analytics.html"><i class="fas fa-chart-pie"></i> Reports and Analytics</a></li>
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-th"></i> Categories Management</a>
+                <ul class="dropdown-menu">
+                    <li><a href="view-categories.html"><i class="fas fa-plus-circle"></i> Manage Category</a></li>
+                    
+                </ul>
+            </li>
+            <li><a href="attendee-management.html"><i class="fas fa-users"></i> Attendee Management</a></li>
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-users-cog"></i> User Management</a>
+                <ul class="dropdown-menu">
+                    <li><a href="add-admin.html"><i class="fas fa-user-plus"></i> Add Admin</a></li>
+                    <li><a href="add-attendee.html"><i class="fas fa-user-plus"></i> Add Attendee</a></li>
+                </ul>
+            </li>
+            <li><a href="profile-management.html"><i class="fas fa-user-circle"></i> Profile Management</a></li>
+            <li><a href="settings.html"><i class="fas fa-cogs"></i> Settings</a></li>
+            <li><a href="logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+        <!-- Close icon for mobile view -->
+        <div class="close-icon" onclick="toggleSidebar()">
+            <i class="fas fa-times"></i>
+        </div>
+    </aside>
+   
+
+    <div class="container">
+        <h1>Reports & Analytics</h1>
+
+        <!-- Statistics Summary -->
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h2 id="totalEvents">0</h2>
+                <p>Total Events</p>
+            </div>
+            <div class="stat-box">
+                <h2 id="totalAttendees">0</h2>
+                <p>Total Attendees</p>
+            </div>
+            <div class="stat-box">
+                <h2 id="totalCategories">0</h2>
+                <p>Categories</p>
+            </div>
+            <div class="stat-box">
+                <h2 id="totalRevenue">$0</h2>
+                <p>Total Revenue</p>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-container">
+            <h2>Event Attendance</h2>
+            <canvas id="attendanceChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h2>Revenue by Category</h2>
+            <canvas id="revenueChart"></canvas>
+        </div>
+
+        <!-- Reports Table -->
+        <h2>Event Details</h2>
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Category</th>
+                    <th>Attendees</th>
+                    <th>Revenue</th>
+                </tr>
+            </thead>
+            <tbody id="eventDetailsTable">
+                <!-- Populated dynamically -->
+            </tbody>
+        </table>
+        <section id="add-attendee">
+            <h2>Add Attendee</h2>
+            <form id="addAttendeeForm">
+                <div class="form-group">
+                    <label for="attendeeName">Name</label>
+                    <input type="text" id="attendeeName" name="attendeeName" placeholder="Enter attendee's name" required>
+                </div>
+                <div class="form-group">
+                    <label for="attendeeEmail">Email</label>
+                    <input type="email" id="attendeeEmail" name="attendeeEmail" placeholder="Enter attendee's email" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventId">Event</label>
+                    <select id="eventId" name="eventId">
+                        <option value="" disabled selected>Select an event</option>
+                        <option value="1">Event A</option>
+                        <option value="2">Event B</option>
+                        <option value="3">Event C</option>
+                    </select>
+                </div>
+                <button type="submit">Add Attendee</button>
+            </form>
+        </section>
+
+        <!-- View Attendees Section -->
+        <section id="view-attendees">
+            <h2>View Attendees</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Event</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="attendeeTableBody">
+                    <!-- Example Row -->
+                    <tr>
+                        <td>John Doe</td>
+                        <td>johndoe@example.com</td>
+                        <td>Event A</td>
+                        <td class="actions">
+                            <button class="edit-btn">Edit</button>
+                            <button class="delete-btn">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Export Button -->
+        <button class="export-btn" onclick="exportToCSV()">Export to CSV</button>
+        <footer>
+            <p>&copy; 2025 Event Management System</p>
+        </footer>
+    </div>
+
+    <script>
+        // Example data for demonstration
+        const eventData = [
+            { name: "Music Fest", category: "Entertainment", attendees: 150, revenue: 3000 },
+            { name: "Tech Conference", category: "Technology", attendees: 200, revenue: 5000 },
+            { name: "Art Exhibition", category: "Art", attendees: 100, revenue: 2000 },
+        ];
+
+        // Populate statistics
+        const totalEvents = eventData.length;
+        const totalAttendees = eventData.reduce((sum, event) => sum + event.attendees, 0);
+        const totalRevenue = eventData.reduce((sum, event) => sum + event.revenue, 0);
+
+        document.getElementById("totalEvents").innerText = totalEvents;
+        document.getElementById("totalAttendees").innerText = totalAttendees;
+        document.getElementById("totalCategories").innerText = [...new Set(eventData.map(e => e.category))].length;
+        document.getElementById("totalRevenue").innerText = `$${totalRevenue}`;
+
+        // Populate table
+        const tableBody = document.getElementById("eventDetailsTable");
+        eventData.forEach(event => {
+            const row = `<tr>
+                <td>${event.name}</td>
+                <td>${event.category}</td>
+                <td>${event.attendees}</td>
+                <td>$${event.revenue}</td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+
+        // Charts
+        const attendanceChart = new Chart(document.getElementById("attendanceChart"), {
+            type: "bar",
+            data: {
+                labels: eventData.map(e => e.name),
+                datasets: [{
+                    label: "Attendees",
+                    data: eventData.map(e => e.attendees),
+                    backgroundColor: "rgba(54, 162, 235, 0.7)",
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 1,
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        const revenueChart = new Chart(document.getElementById("revenueChart"), {
+            type: "pie",
+            data: {
+                labels: eventData.map(e => e.category),
+                datasets: [{
+                    label: "Revenue",
+                    data: eventData.map(e => e.revenue),
+                    backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        // Export to CSV
+        function exportToCSV() {
+            let csvContent = "Event Name,Category,Attendees,Revenue\n";
+            eventData.forEach(event => {
+                csvContent += `${event.name},${event.category},${event.attendees},${event.revenue}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "event_report.csv";
+            a.click();
+        }
+    </script>
+</body>
+</html>

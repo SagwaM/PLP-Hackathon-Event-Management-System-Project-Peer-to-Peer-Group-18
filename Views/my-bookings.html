@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings</title>
+    <script src="https://kit.fontawesome.com/164459a379.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+        }
+
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            margin: 15px 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar a:hover {
+            text-decoration: underline;
+        }
+
+        .sidebar i {
+            margin-right: 10px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            background-color: #ecf0f1;
+        }
+
+        .booking-list {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        .booking-item {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-item h4 {
+            margin-bottom: 10px;
+        }
+
+        .booking-item p {
+            margin-bottom: 10px;
+        }
+
+        .booking-item button {
+            padding: 10px 15px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .booking-item button:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h1>My Bookings</h1>
+        <div class="icons">
+            <i class="fas fa-bell"></i>
+            <i class="fas fa-user-circle"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a href="attendee-1.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#"><i class="fas fa-star"></i> Featured Events</a>
+            <a href="#"><i class="fas fa-heart"></i> Personalized Recommendations</a>
+            <a href="recently-attended.html"><i class="fas fa-calendar-check"></i> Recently Attended Events</a>
+            <a href="attendee-events.html"><i class="fas fa-list"></i> Event Listings</a>
+            <a href="my-bookings.html"><i class="fas fa-ticket-alt"></i> My Bookings</a>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h2>My Bookings</h2>
+            <div class="booking-list" id="booking-list">
+                <!-- Booking items will be dynamically injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate fetching bookings from the backend
+            const bookings = [
+                {
+                    event_name: "Music Festival",
+                    event_date: "2025-02-15",
+                    booking_date: "2025-01-10",
+                },
+                {
+                    event_name: "Art Exhibition",
+                    event_date: "2025-02-25",
+                    booking_date: "2025-01-15",
+                },
+            ];
+
+            const bookingList = document.getElementById('booking-list');
+            bookings.forEach(booking => {
+                const bookingItem = document.createElement('div');
+                bookingItem.classList.add('booking-item');
+                bookingItem.innerHTML = `
+                    <h4>${booking.event_name}</h4>
+                    <p>Event Date: ${booking.event_date}</p>
+                    <p>Booking Date: ${booking.booking_date}</p>
+                    <button onclick="cancelBooking()">Cancel Booking</button>
+                `;
+                bookingList.appendChild(bookingItem);
+            });
+        });
+
+        function cancelBooking() {
+            alert("Booking canceled successfully!");
+            // In real implementation, make an API call to cancel the booking.
+        }
+    </script>
+    <script src="../public/js/bookings.js"></script>
+
+
+</body>
+</html>

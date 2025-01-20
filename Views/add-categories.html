@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Categories - Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/164459a379.js" crossorigin="anonymous"></script>
+  <style>
+    #sidebar {
+      min-width: 250px;
+      max-width: 250px;
+      background-color: #343a40;
+      height: 100vh;
+      position: fixed;
+      transition: all 0.3s;
+    }
+
+    #sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    #sidebar ul li a {
+      text-decoration: none;
+      font-size: 18px;
+      color: #fff;
+      display: block;
+      padding: 10px 20px;
+    }
+
+    #sidebar ul li a:hover {
+      background: #495057;
+    }
+
+    #mainContent {
+      margin-left: 250px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+
+    @media (max-width: 768px) {
+      #sidebar {
+        margin-left: -250px;
+      }
+
+      #sidebar.active {
+        margin-left: 0;
+      }
+
+      #mainContent {
+        margin-left: 0;
+      }
+
+      #mainContent.active {
+        margin-left: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <div id="sidebar" class="bg-dark text-white">
+      <h4 class="text-center p-3">Admin Dashboard</h4>
+      <ul>
+        <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="view-events.html"><i class="fas fa-calendar-alt"></i> View Events</a></li>
+        <li><a href="manage-bookings.html"><i class="fas fa-bookmark"></i> Manage Bookings</a></li>
+        <li><a href="add-categories.html" class="active"><i class="fas fa-tags"></i> Categories</a></li>
+        <li><a href="profile.html"><i class="fas fa-user"></i> Profile</a></li>
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="flex-grow-1">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+          <button id="toggleSidebar" class="btn btn-light me-3">
+            <i class="fas fa-bars"></i>
+          </button>
+          <a class="navbar-brand" href="#">Manage Categories</a>
+        </div>
+      </nav>
+
+      <div class="container mt-4">
+        <h2 class="text-center mb-4">Categories</h2>
+
+        <!-- Add Category Form -->
+        <div class="card mb-4">
+          <div class="card-header bg-dark text-white">Add New Category</div>
+          <div class="card-body">
+            <form id="addCategoryForm">
+              <div class="mb-3">
+                <label for="categoryName" class="form-label">Category Name</label>
+                <input type="text" class="form-control" id="categoryName" placeholder="Enter category name" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Add Category</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Categories Table -->
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="categoryTableBody">
+            <!-- Categories will be dynamically inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Toggle sidebar functionality
+    document.getElementById('toggleSidebar').addEventListener('click', () => {
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('mainContent');
+      sidebar.classList.toggle('active');
+      mainContent.classList.toggle('active');
+    });
+
+    // Load categories
+    function loadCategories() {
+      $.ajax({
+        url: '/get-categories', // Backend endpoint to fetch categories
+        method: 'GET',
+        success: function (data) {
+          const categoryTable = $('#categoryTableBody');
+          categoryTable.empty(); // Clear existing rows
+          data.forEach(category => {
+            const row = `<tr>
+                          <td>${category.id}</td>
+                          <td>${category.name}</td>
+                          <td>
+                            <button class="btn btn-warning btn-sm edit-btn" data-id="${category.id}" data-name="${category.name}">Edit</button>
+                            <button class="btn btn-danger btn-sm delete-btn" data-id="${category.id}">Delete</button>
+                          </td>
+                        </tr>`;
+            categoryTable.append(row);
+          });
+        },
+        error: function (xhr, status, error) {
+          console.error('Error:', error);
+          alert('Error loading categories');
+        }
+      });
+    }
+
+    // Add new category
+    $('#addCategoryForm').submit(function (event) {
+      event.preventDefault();
+
+      const categoryName = $('#categoryName').val();
+      if (!categoryName) {
+        alert('Please enter a category name');
+        return;
+      }
+
+      $.ajax({
+        url: '/add-categories',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ categoryName }), // Send the data as JSON
+        success: function () {
+          alert('Category added successfully!');
+          $('#categoryName').val(''); // Clear the input field
+          loadCategories(); // Reload the categories to show the new one
+        },
+        error: function (xhr, status, error) {
+          console.error('Error adding category:', error);
+          alert('Error adding category');
+        }
+    });
+});
+
+
+    // Edit category
+    $(document).on('click', '.edit-btn', function () {
+      const categoryId = $(this).data('id');
+      const oldName = $(this).data('name');
+      const newName = prompt('Edit category name:', oldName);
+
+      if (newName && newName !== oldName) {
+        $.ajax({
+          url: `/update-category/${categoryId}`, // Backend endpoint to update category
+          method: 'PUT',
+          contentType: 'application/json',
+          data: JSON.stringify({ name: newName }),
+          success: function () {
+            alert('Category updated successfully!');
+            loadCategories();
+          },
+          error: function () {
+            alert('Error updating category');
+          }
+        });
+      }
+    });
+
+    // Delete category
+    $(document).on('click', '.delete-btn', function () {
+      const categoryId = $(this).data('id');
+
+      if (confirm('Are you sure you want to delete this category?')) {
+        $.ajax({
+          url: `/delete-category/${categoryId}`, // Backend endpoint to delete category
+          method: 'DELETE',
+          success: function () {
+            alert('Category deleted successfully!');
+            loadCategories();
+          },
+          error: function () {
+            alert('Error deleting category');
+          }
+        });
+      }
+    });
+
+    // Load categories on page load
+    $(document).ready(() => {
+      loadCategories();
+    });
+  </script>
+</body>
+</html>

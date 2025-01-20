@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            background-color: #f9f9f9;
+        }
+
+        .main-content {
+            margin: auto;
+            width: 100%;
+            max-width: 600px;
+            padding: 2em;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 1.5em;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5em;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5em;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            padding: 0.7em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 0.7em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2em;
+            color: #7f8c8d;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <header>
+            <h1>User Profile</h1>
+        </header>
+
+        <!-- User Profile Form -->
+        <form id="profileForm">
+            <div class="form-group">
+                <label for="userName">Name</label>
+                <input type="text" id="userName" name="userName" placeholder="Enter your name" value="John Doe" required>
+            </div>
+
+            <div class="form-group">
+                <label for="userEmail">Email</label>
+                <input type="email" id="userEmail" name="userEmail" placeholder="Enter your email" value="johndoe@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="userPhone">Phone</label>
+                <input type="tel" id="userPhone" name="userPhone" placeholder="Enter your phone number" value="123-456-7890">
+            </div>
+
+            <div class="form-group">
+                <label for="userBio">Bio</label>
+                <input type="text" id="userBio" name="userBio" placeholder="Tell us about yourself" value="Event enthusiast and organizer.">
+            </div>
+
+            <button type="submit">Save Changes</button>
+        </form>
+
+        <footer>
+            <p>&copy; 2025 Event Management System</p>
+        </footer>
+    </div>
+</body>
+</html>

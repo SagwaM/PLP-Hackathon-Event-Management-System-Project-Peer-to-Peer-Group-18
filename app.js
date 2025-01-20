@@ -1,132 +1,130 @@
+require('dotenv').config();
 const express = require('express');
-const mysql = require('mysql2/promise'); // Use mysql2 with promises for cleaner code
+const mysql = require('mysql');
 const bodyParser = require('body-parser');
-const cors = require('cors'); // For handling cross-origin requests
-const path = require('path'); // For handling file paths
+const cors = require('cors'); // Importing cors package
+const bcrypt = require('bcrypt'); // bcrypt for password hashing
+// Importing the eventController for handling event routes
+const eventController = require('./Controllers/eventController');
+const authController = require('./Controllers/authController');
+
 const app = express();
-const PORT = 3000;
 
-// Middleware
-app.use(cors()); // Enable CORS
-app.use(express.json()); // Parse JSON bodies
-app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
-
-// Database connection pool
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '', // Update with your MySQL root password
-  database: 'event_manager_db',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+// MySQL connection setup
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
-// Test database connection
-(async () => {
-  try {
-    const connection = await pool.getConnection();
-    console.log('Connected to the MySQL database');
-    connection.release();
-  } catch (err) {
-    console.error('Error connecting to the database:', err.message);
-    process.exit(1); // Exit the process if the database connection fails
+db.connect((err) => {
+  if (err) {
+    console.error('Database connection failed:', err);
+    process.exit(1);
   }
-})();
-
-// Root route
-app.get('/', (req, res) => {
-  res.send('Server is running!');
+  console.log('Connected to MySQL');
 });
 
-// Serve HTML views
-app.get('/add-event', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'add-event.html'));
-});
+// Enable CORS for all routes
+app.use(cors());
 
-app.get('/view-event/:id', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'view-event.html'));
-});
+// Middleware for parsing JSON bodies
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+// Attach the database to the app for reuse in routes
+app.locals.db = db;
 
-// API Endpoints
-// Fetch all events
-app.get('/api/events', async (req, res) => {
-  try {
-    const [results] = await pool.query('SELECT * FROM events');
+
+// Routes
+const eventRoutes = require('./routes/eventRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const authRoutes = require('./routes/authRoutes');
+
+
+
+// Use routes for events and categories
+app.use('/api/events', eventRoutes);
+app.use('/api', categoryRoutes);
+app.use('/api/auth', authRoutes);
+
+// Route for user login
+//app.post('/api/login', authController.login);
+
+// Route to fetch all events
+app.get('/api/events', eventController.getAllEvents);
+
+// Route to add a new event
+app.post('/api/events', eventController.addEvent);
+
+// Route to delete an event
+app.delete('/api/events/:id', eventController.deleteEvent);
+
+// Route to update an event
+app.put('/api/events/:id', eventController.updateEvent);
+
+// Route to get event by ID
+app.get('/api/events/:id', eventController.getEventById);
+
+// Route to get upcoming events
+app.get('/api/upcoming-events', eventController.getUpcomingEvents);
+
+// Route to search events
+app.get('/api/search-events', eventController.searchEvents);
+// Route to fetch all categories
+app.get('/api/categories', (req, res) => {
+  db.query('SELECT * FROM categories', (err, results) => {
+    if (err) throw err;
     res.json(results);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  });
 });
 
-// Fetch specific event
-app.get('/api/events/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const [results] = await pool.query('SELECT * FROM events WHERE id = ?', [id]);
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
-    res.json(results[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// Route to add a category
+app.post('/api/categories', (req, res) => {
+  const { name } = req.body;
+  db.query('INSERT INTO categories (name) VALUES (?)', [name], (err, result) => {
+    if (err) throw err;
+    res.json({ message: 'Category added successfully' });
+  });
 });
 
-// Create a new event
-app.post('/api/events', async (req, res) => {
-  const { title, description, event_date } = req.body;
-  try {
-    const [results] = await pool.query(
-      'INSERT INTO events (title, description, event_date) VALUES (?, ?, ?)',
-      [title, description, event_date]
-    );
-    res.status(201).json({ message: 'Event created successfully!', id: results.insertId });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// Route to delete a category
+app.delete('/api/categories/:id', (req, res) => {
+  const categoryId = req.params.id;
+  db.query('DELETE FROM categories WHERE categories_id = ?', [categoryId], (err, result) => {
+    if (err) throw err;
+    res.json({ message: 'Category deleted successfully' });
+  });
 });
 
-// Update an existing event
-app.put('/api/events/:id', async (req, res) => {
-  const { id } = req.params;
-  const { title, description, event_date } = req.body;
-  try {
-    const [results] = await pool.query(
-      'UPDATE events SET title = ?, description = ?, event_date = ? WHERE id = ?',
-      [title, description, event_date, id]
-    );
-    if (results.affectedRows === 0) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
-    res.json({ message: 'Event updated successfully!' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// Endpoint to fetch details of a single event by ID
+app.get('/api/events/:id', (req, res) => {
+  const eventId = req.params.id;
+  db.query('SELECT * FROM events WHERE events_id = ?', [eventId], (err, result) => {
+    if (err) throw err;
+    res.json(result[0]);
+  });
 });
 
-// Delete an event
-app.delete('/api/events/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const [results] = await pool.query('DELETE FROM events WHERE id = ?', [id]);
-    if (results.affectedRows === 0) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
-    res.json({ message: 'Event deleted successfully!' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// Endpoint to handle booking submission
+app.post('/api/bookings', (req, res) => {
+  const { eventId, attendeeName, attendeeEmail } = req.body;
+  db.query('INSERT INTO bookings (events_id, attendee_name, attendee_email) VALUES (?, ?, ?)', 
+  [eventId, attendeeName, attendeeEmail], (err, result) => {
+    if (err) throw err;
+    res.json({ message: 'Booking confirmed' });
+  });
 });
 
-// Default error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Internal Server Error' });
+
+// Health check route
+app.get('/', (req, res) => {
+  res.send({ message: 'Event Management System API is running!' });
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+
+// Starting the server
+const PORT = process.env.PORT || 3000;
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
 });

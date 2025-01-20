@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Listings</title>
+    <script src="https://kit.fontawesome.com/164459a379.js" crossorigin="anonymous"></script>
+    <!--<link rel="stylesheet" href="style.css">-->
+    <style>
+      /* Reset and basic styles */
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      /* Sidebar Styling */
+      .admin-sidebar {
+          width: 250px;
+          background-color: #2c3e50;
+          color: white;
+          padding: 20px;
+          position: fixed;
+          height: 100%;
+          z-index: 1000;
+          overflow-y: auto;
+          transition: all 0.3s ease;
+      }
+
+      .sidebar-header {
+          text-align: center;
+          margin-bottom: 20px;
+      }
+
+      .sidebar-menu {
+          list-style-type: none;
+          padding-left: 0;
+      }
+
+      .sidebar-menu li {
+          margin: 10px 0;
+      }
+
+      .sidebar-menu a {
+          color: white;
+          text-decoration: none;
+          padding: 10px;
+          display: block;
+      }
+
+      .sidebar-menu .dropdown-menu {
+          display: none;
+          list-style-type: none;
+          padding-left: 20px;
+      }
+
+      .sidebar-menu .dropdown:hover .dropdown-menu {
+          display: block;
+      }
+
+      .dropdown > a::after {
+          content: " ▼";
+          float: right;
+      }
+
+      .dropdown:hover > a::after {
+          content: " ▲";
+      }
+
+      /* Navbar Styling */
+      .navbar {
+          position: fixed;
+          top: 0;
+          left: 250px;
+          width: calc(100% - 250px);
+          background-color: #34495e;
+          padding: 10px;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          z-index: 999;
+      }
+
+      .navbar .icon {
+          margin-left: 20px;
+          cursor: pointer;
+          color: white;
+      }
+
+      /* Admin Dashboard Styling */
+      .admin-dashboard {
+          margin-left: 250px;
+          padding: 20px;
+          padding-left: 30px;
+          transition: margin-left 0.3s ease;
+      }
+
+      .content {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          margin-top: 70px; /* Account for navbar height */
+      }
+
+      .event-table {
+          width: 80%;
+          margin: 20px 0;
+          border-collapse: collapse;
+      }
+
+      .event-table th, .event-table td {
+          padding: 10px;
+          border: 1px solid #ddd;
+          text-align: center;
+      }
+
+      .event-table th {
+          background-color: #34495e;
+          color: white;
+      }
+
+      .event-table .edit-btn, .event-table .delete-btn {
+          padding: 5px 10px;
+          margin: 0 5px;
+          cursor: pointer;
+      }
+
+      /* Hamburger Icon */
+      .hamburger-icon {
+          font-size: 30px;
+          color: white;
+          cursor: pointer;
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          display: none;
+      }
+
+      /* X Icon */
+      .close-icon {
+          font-size: 30px;
+          color: white;
+          cursor: pointer;
+          position: absolute;
+          top: 20px;
+          left: 20px;
+      }
+
+      @media (max-width: 768px) {
+          .admin-sidebar {
+              width: 0;
+              padding: 0;
+              position: fixed;
+              height: 100%;
+          }
+
+          .admin-dashboard {
+              margin-left: 0;
+          }
+
+          .hamburger-icon {
+              display: block;
+          }
+
+          .admin-sidebar.open {
+              width: 250px;
+          }
+
+          .close-icon {
+              display: block;
+          }
+      }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+ <!-- Sidebar -->
+ <!-- Hamburger icon for mobile view -->
+ <div class="hamburger-icon" onclick="toggleSidebar()">
+  <i class="fas fa-bars"></i>
+</div>
+
+<!-- Admin Sidebar -->
+<aside class="admin-sidebar">
+  <div class="sidebar-header">
+      <h2>Admin Dashboard</h2>
+  </div>
+  <ul class="sidebar-menu">
+      <li><a href="admin-1.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+      <li class="dropdown">
+          <a href="#"><i class="fas fa-cogs"></i> Event Management</a>
+          <ul class="dropdown-menu">
+              <li><a href="add-event.html"><i class="fas fa-edit"></i> Manage Events</a></li>
+              <li><a href="view-events.html"><i class="fas fa-list"></i> Event Listings</a></li>
+          </ul>
+      </li>
+      <li class="dropdown">
+          <a href="#"><i class="fas fa-book"></i> Booking Management</a>
+          <ul class="dropdown-menu">
+              <li><a href="view-bookings.html"><i class="fas fa-eye"></i> View Bookings</a></li>
+              <li><a href="confirm-cancel-bookings.html"><i class="fas fa-check-circle"></i> Confirm/Cancel Bookings</a></li>
+          </ul>
+      </li>
+      <li><a href="revenue-breakdown.html"><i class="fas fa-chart-line"></i> Revenue Breakdown</a></li>
+      <li><a href="reports-analytics.html"><i class="fas fa-chart-pie"></i> Reports and Analytics</a></li>
+      <li class="dropdown">
+          <a href="#"><i class="fas fa-th"></i> Categories Management</a>
+          <ul class="dropdown-menu">
+            <li><a href="view-categories.html"><i class="fas fa-plus-circle"></i> Manage Category</a></li>
+          </ul>
+      </li>
+      <li><a href="attendee-management.html"><i class="fas fa-users"></i> Attendee Management</a></li>
+      <li class="dropdown">
+          <a href="#"><i class="fas fa-users-cog"></i> User Management</a>
+          <ul class="dropdown-menu">
+              <li><a href="add-admin.html"><i class="fas fa-user-plus"></i> Add Admin</a></li>
+              <li><a href="add-attendee.html"><i class="fas fa-user-plus"></i> Add Attendee</a></li>
+          </ul>
+      </li>
+      <li><a href="profile-management.html"><i class="fas fa-user-circle"></i> Profile Management</a></li>
+      <li><a href="settings.html"><i class="fas fa-cogs"></i> Settings</a></li>
+      <li><a href="logout.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+  </ul>
+  <!-- Close icon for mobile view -->
+  <div class="close-icon" onclick="toggleSidebar()">
+      <i class="fas fa-times"></i>
+  </div>
+</aside>
+
+ <!-- Navbar -->
+<div class="navbar">
+  <i class="fas fa-bell icon"></i>
+  <i class="fas fa-user-circle icon"></i>
+</div>
+
+<main class="content">
+    <div class="content-header">
+        <h2><i class="fas fa-list"></i> Event Listings</h2>
+    </div>
+
+    <div class="event-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Event Date</th>
+                    <th>Location</th>
+                    <th>Description</th>
+                    <th>Max Participants</th>
+                    <th>Price</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="event-list">
+                <!-- Event rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script>
+    // Base API URL
+    const API_BASE_URL = 'http://localhost:3000/api';
+
+    // Function to fetch and render events
+    function fetchAndRenderEvents() {
+        fetch(`${API_BASE_URL}/events`)
+            .then(response => response.json())
+            .then(data => {
+                const eventList = document.getElementById('event-list');
+                eventList.innerHTML = ''; // Clear existing events
+                data.forEach(event => {
+                    const eventRow = document.createElement('tr');
+                    eventRow.setAttribute('data-event-id', event.id); // Store event ID
+                    eventRow.innerHTML = `
+                        <td>${event.title}</td>
+                        <td>${event.event_date}</td>
+                        <td>${event.location}</td>
+                        <td>${event.description}</td>
+                        <td>${event.max_participants}</td>
+                        <td>${event.price}</td>
+                        <td><img src="${event.image_url}" alt="${event.title}" width="50"></td>
+                        <td>
+                            <button class="edit-btn"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="delete-btn"><i class="fas fa-trash-alt"></i> Delete</button>
+                        </td>
+                    `;
+                    eventList.appendChild(eventRow);
+                });
+            })
+            .catch(error => {
+                iziToast.error({title: 'Error', message: 'Failed to load event data.', position: 'topRight'});
+            });
+    }
+
+    // Function to handle edit event
+    function handleEdit(eventRow, eventId) {
+        const eventName = eventRow.cells[0].textContent;
+        const eventDate = eventRow.cells[1].textContent;
+        const location = eventRow.cells[2].textContent;
+        const description = eventRow.cells[3].textContent;
+        const maxParticipants = eventRow.cells[4].textContent;
+        const price = eventRow.cells[5].textContent;
+
+        // Prompt the admin to edit multiple fields
+        const newTitle = prompt(`Editing event: ${eventName}\nEnter new title:`, eventName);
+        const newEventDate = prompt(`Enter new event date (current: ${eventDate}):`, eventDate);
+        const newLocation = prompt(`Enter new location (current: ${location}):`, location);
+        const newDescription = prompt(`Enter new description (current: ${description}):`, description);
+        const newMaxParticipants = prompt(`Enter new max participants (current: ${maxParticipants}):`, maxParticipants);
+        const newPrice = prompt(`Enter new price (current: ${price}):`, price);
+
+        if (newTitle && newTitle.trim() !== '') {
+            const updatedEvent = {
+                title: newTitle,
+                event_date: newEventDate,
+                location: newLocation,
+                description: newDescription,
+                max_participants: newMaxParticipants,
+                price: newPrice
+            };
+
+            // Send the updated data to the backend
+            fetch(`${API_BASE_URL}/events/${eventId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedEvent),
+            })
+            .then(response => response.json())
+            .then(updatedEvent => {
+                eventRow.cells[0].textContent = updatedEvent.title;
+                eventRow.cells[1].textContent = updatedEvent.event_date;
+                eventRow.cells[2].textContent = updatedEvent.location;
+                eventRow.cells[3].textContent = updatedEvent.description;
+                eventRow.cells[4].textContent = updatedEvent.max_participants;
+                eventRow.cells[5].textContent = updatedEvent.price;
+
+                iziToast.success({title: 'Success', message: 'Event updated successfully!', position: 'topRight'});
+            })
+            .catch(error => {
+                iziToast.error({title: 'Error', message: 'Failed to update event.', position: 'topRight'});
+            });
+        }
+    }
+
+    // Fetch events on page load
+    fetchAndRenderEvents();
+
+    // Function to handle delete event
+    function handleDelete(eventRow, eventId) {
+        const eventName = eventRow.cells[0].textContent;
+        const confirmed = confirm(`Are you sure you want to delete the event: ${eventName}?`);
+        if (confirmed) {
+            fetch(`${API_BASE_URL}/events/${eventId}`, {
+                method: 'DELETE',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        eventRow.remove(); // Remove from UI
+                        alert('Event deleted successfully!');
+                    } else {
+                        throw new Error('Failed to delete event');
+                    }
+                    iziToast.success({title: 'Success', message: 'Event deleted successfully!', position: 'topRight'});
+                })
+                .catch(error =>{
+                    iziToast.error({title: 'Error', message: 'Failed to delete event.', position: 'topRight'});
+                });
+        }
+    }
+
+    // Event delegation for Edit/Delete buttons
+    document.addEventListener('click', (e) => {
+        const eventRow = e.target.closest('tr');
+        if (!eventRow) return;
+        const eventId = eventRow.getAttribute('data-event-id');
+
+        if (e.target.closest('.edit-btn')) {
+            handleEdit(eventRow, eventId);
+        }
+
+        if (e.target.closest('.delete-btn')) {
+            handleDelete(eventRow, eventId);
+        }
+    });
+
+    // Initialize: Fetch and render events on page load
+    document.addEventListener('DOMContentLoaded', fetchAndRenderEvents);
+</script>
+
+
+</body>
+</html>
