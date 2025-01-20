@@ -52,22 +52,20 @@ Follow these steps to set up the project locally:
 - Any modern browser (for testing the frontend)
 ## Installation
 Clone the Repository:
- git clone https://github.com/your-username/event-management-system.git
-cd event-management-system
-Install Dependencies:
-npm install
-Database Setup:
-Import the database.sql file (provided in the project directory) into your MySQL server.
-Update the database configuration in config.js:
-javascript
-Copy
-Edit
-const dbConfig = {
+`git clone https://github.com/your-username/event-management-system.git`
+`cd event-management-system`
+- Install Dependencies:
+`npm install`
+- Database Setup:
+- database
+  ```
+  const dbConfig = {
   host: 'localhost',
   user: 'your-username',
   password: 'your-password',
   database: 'event_management',
 };
+
 module.exports = dbConfig;
 Start the Server:
 
