@@ -64,16 +64,19 @@ Clone the Repository:
   user: 'your-username',
   password: 'your-password',
   database: 'event_management',
-};
+  };
 
 module.exports = dbConfig;
 Start the Server:
+`npm start`
+# Usage
+## Admin:
+- Login with admin credentials.
+- Navigate to the admin dashboard to manage events, categories, and users.
+## Attendee:
+- Register and log in as an attendee.
+- Browse events, book tickets, and manage your bookings.
+## Guest:
+- Explore public events on the landing page.
 
-bash
-Copy
-Edit
-npm start
-Access the Application:
-
-Open your browser and navigate to http://localhost:3000.
 
