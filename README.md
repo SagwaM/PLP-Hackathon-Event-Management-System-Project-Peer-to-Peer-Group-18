@@ -5,7 +5,7 @@ A modern, interactive, and user-friendly Event Management System designed to str
 - Event Creation: Add new events with titles, descriptions, and dates.
 - Event Management: View, update, and delete events with ease.
 - Event Categories: Organize events using categories for better accessibility.
-- User Roles:
+User Roles:
 - Admin: Manage events, attendees, categories, and view detailed reports.
 - Attendee: Browse events, book tickets, and manage bookings.
 - Bookings: Attendees can book events, view their bookings, and review past events.
