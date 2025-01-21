@@ -20,8 +20,8 @@ A modern, interactive, and user-friendly Event Management System designed to str
 HTML Pages:
 - categories.html: Manage event categories.
 - add-event.html: Form to create new events.
-- admin-1.html / admin.html: Admin dashboards for managing events, categories, and users.
-- attendee-1.html / attendee.html: Attendee dashboard to access bookings and events.
+- admin-1.html: Admin dashboards for managing events, categories, and users.
+- attendee-1.html: Attendee dashboard to access bookings and events.
 - attendee-booking.html: Booking interface for attendees.
 - attendee-events.html: Browse and explore available events.
 - index.html: Landing page showcasing key features of the system.
