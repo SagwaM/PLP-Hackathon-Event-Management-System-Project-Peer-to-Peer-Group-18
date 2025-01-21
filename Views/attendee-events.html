@@ -196,7 +196,7 @@
                         const eventElement = document.createElement('div');
                         eventElement.className = 'event';
                         eventElement.innerHTML = `
-                            <img src="${event.image_url}" alt="${event.title}">
+                            <img src="http://localhost:3000${event.image_url}" alt="${event.title}">
                             <h3>${event.title}</h3>
                             <p>Date: ${event.event_date}</p>
                             <p>Category: ${event.category}</p>
